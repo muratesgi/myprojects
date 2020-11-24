@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Kittens Carousel is a static website application deployed on AWS Simple Storage Service (S3), served through Cloudfront and Route 53 using AWS Cloudformation Service.
+'
+  
+Parameters:
+  DefaultRootObject:
+    Description: 'The default path for the index document.'
+    Type: String
+    Default: 'index.html'
+  
+Resources:
+  KittensBucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: PublicRead
+      BucketName: !Ref BucketName
+      WebsiteConfiguration: 
+        IndexDocument: index.html
+
+  KittensBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: 
+      PolicyDocument:
+        Statement: 
+          Sid: "PublicReadGetObject",
+          Effect: "Allow",
+          Principal: "*",
+          Action: "s3:GetObject",
+          Resource: "arn:aws:s3:::example.com/*"
+
+  KittensCloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        CacheBehaviors:
+          - TargetOriginId: KittensS3Origin
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+        DefaultCacheBehavior: 
+        IPV6Enabled: true | false
+        Origins:
+          - DomainName: !Ref DomainName 
+            Id: KittensS3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        Enabled: 'true'
+        Comment: 'CloudFront Distribution for S3 Bucket'
+        DefaultRootObject: index.html
+        ViewerProtocolPolicy: allow-all
+
+  KittensCertificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties:
+      CertificateAuthorityArn: String
+      CertificateTransparencyLoggingPreference: DISABLE
+      DomainName: !Ref KittensDomainName #required
+      DomainValidationOptions:
+        - DomainName: !Ref KittensDomainName
+          HostedZoneId: !Ref DomainName
+      ValidationMethod: DNS 
+
+LogicalID:
+  Type: "AWS::Route53::RecordSet"
+  Properties:
+    AliasTarget:
+      AliasTarget
+    Comment: String
+    Failover: String
+    GeoLocation:
+      GeoLocation
+    HealthCheckId: String
+    HostedZoneId: String
+    HostedZoneName: String
+    MultiValueAnswer: Boolean
+    Name: String #required
+    Region: String
+    ResourceRecords:
+      - String
+    SetIdentifier: String
+    TTL: String
+    Type: String #required
+    Weight: Integer
+
+  
+  
+        
+        
+
+
+  
+Transform:
+  
+Outputs:
